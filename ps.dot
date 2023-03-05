@@ -1,0 +1,41 @@
+digraph D {
+    splines="TRUE";
+    
+    subgraph backtester {
+        db [shape="squre"]
+        api [shape="Msquare"]
+        req_buy [label="buy"]
+        req_sell [label="sell"]
+        req_add_model [label="add model"]
+        mq_buy [label="start buy"]
+        mq_sell [label="start sell"]
+        mq_add_model [label="add model"]
+        msgq [label="message queue", shape="rect"]
+        api->{req_buy, req_sell, req_add_model} -> msgq
+
+        subgraph mq_recv {
+            mq_ccbuy [label="conclude buy"]
+            mq_ccsell [label="conclude sell"]
+            mq_addmdl [label="add model"]
+            msgq->{mq_add_model}->admdlp
+            msgq->{mq_buy, mq_sell}->bsp
+            msgq->{mq_ccbuy, mq_ccsell, mq_addmdl}->db->{insert, delete, update}
+        }
+    }
+
+    subgraph buysell_queue {
+        bsp [label="buy sell PS", shape=Msquare]
+        bsp_mq [label="message receieve", shape=rect]
+        msgq2 [label="message queue"]
+        bsp->bsp_mq
+        bsp_mq->{buy, sell}->queue->getprice->msgq2->queue
+    }
+
+    subgraph addmodel {
+        admdlp [label="add model PS", shape=Msquare]
+        mdlfactor [label="user model", shape=rect]
+        dataset [label="dataset", shape=rect]
+        train [label="train model"]
+        admdlp->mdlfactor->dataset->train->"message queue"
+    }
+}
