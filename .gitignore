@@ -1,3 +1,6 @@
 .vscode
-*.py
+t*.*
 memo.md
+output
+mqid.txt
+key*
