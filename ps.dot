@@ -16,10 +16,11 @@ digraph D {
         subgraph mq_recv {
             mq_ccbuy [label="conclude buy"]
             mq_ccsell [label="conclude sell"]
-            mq_addmdl [label="add model"]
+            mq_addmdl [label="add trained model"]
             msgq->{mq_add_model}->admdlp
             msgq->{mq_buy, mq_sell}->bsp
-            msgq->{mq_ccbuy, mq_ccsell, mq_addmdl}->db->{insert, delete, update}
+            api->mq_addmdl->db 
+            msgq->{mq_ccbuy, mq_ccsell}->db->{insert, delete, update}
         }
     }
 
@@ -36,6 +37,6 @@ digraph D {
         mdlfactor [label="user model", shape=rect]
         dataset [label="dataset", shape=rect]
         train [label="train model"]
-        admdlp->mdlfactor->dataset->train->"message queue"
+        admdlp->mdlfactor->dataset->train->"send model"
     }
 }
